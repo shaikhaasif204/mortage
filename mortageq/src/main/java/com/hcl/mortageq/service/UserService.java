@@ -18,25 +18,24 @@ public class UserService {
 
 	@Autowired
 	PropertyRepository propertyRepository;
-	
-	@Autowired 
+
+	@Autowired
 	LoanOfferRepository loanOfferRepository;
-	
+
 	public OfferDetails searchForProperty(User user) {
 		OfferDetails offerDetails = new OfferDetails();
 		Property property = propertyRepository.findByPincode(user.getProperyPincode());
 		List<LoanOffer> allLoanOffers = loanOfferRepository.findAll();
-		
-		//prepare for offer details
+
+		// prepare for offer details
 		offerDetails.setPincode(property.getPincode());
 		offerDetails.setPrizePerSqft(property.getPrizePerSqft());
 		double totalPrize = user.getPropertyAreaSize() * property.getPrizePerSqft();
 		offerDetails.setTotalPrize(totalPrize);
-		List<LoanOffer> eligibleOffers = allLoanOffers.stream().filter(lo -> {
-return lo.getLoanAmount() <= totalPrize*0.8;
-			}).collect(Collectors.toList());
+		List<LoanOffer> eligibleOffers = allLoanOffers.stream().filter(lo -> lo.getLoanAmount() <= totalPrize * 0.8)
+				.collect(Collectors.toList());
 		offerDetails.setEligibleOffers(eligibleOffers);
-	return offerDetails;
-		
+		return offerDetails;
+
 	}
 }
