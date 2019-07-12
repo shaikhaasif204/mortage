@@ -26,15 +26,20 @@ public class UserService {
 		OfferDetails offerDetails = new OfferDetails();
 		Property property = propertyRepository.findByPincode(user.getProperyPincode());
 		List<LoanOffer> allLoanOffers = loanOfferRepository.findAll();
-
+		double totalPrize = user.getPropertyAreaSize() * property.getPrizePerSqft();
+		
 		// prepare for offer details
+		if(totalPrize < 500000) {
+			offerDetails.setMsg("User is not eligiable for the loan, total loan amount should be greater that 5 lacks");
+			
+		}else {
 		offerDetails.setPincode(property.getPincode());
 		offerDetails.setPrizePerSqft(property.getPrizePerSqft());
-		double totalPrize = user.getPropertyAreaSize() * property.getPrizePerSqft();
 		offerDetails.setTotalPrize(totalPrize);
 		List<LoanOffer> eligibleOffers = allLoanOffers.stream().filter(lo -> lo.getLoanAmount() <= totalPrize * 0.8)
 				.collect(Collectors.toList());
 		offerDetails.setEligibleOffers(eligibleOffers);
+		}
 		return offerDetails;
 
 	}
